@@ -1,4 +1,3 @@
-import os
 import anthropic
 from app.config import settings
 

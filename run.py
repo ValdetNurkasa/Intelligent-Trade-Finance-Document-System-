@@ -5,7 +5,6 @@ from pathlib import Path
 
 from app.pipeline import run_pipeline
 from app.state import PipelineState
-from app.utils.ids import make_run_id
 
 
 def create_run_dir(bundle_id: str) -> Path:
