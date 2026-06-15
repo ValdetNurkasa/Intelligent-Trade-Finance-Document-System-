@@ -4,3 +4,7 @@ name_match_threshold: 0.85
 sanctions_freeze_threshold: 1.0
 country_risk_escalation_tier: 3
 adverse_media_lookback_months: 24
+low_confidence_cutoff: 0.75
+ocr_quality_cutoff: 0.75
+approval_threshold_major: 0
+approval_threshold_minor: 3
