@@ -1,4 +1,3 @@
-from datetime import date
 from app.schemas.common import Severity
 from app.schemas.context import ContextPacket
 from app.schemas.extraction import ExtractedDocs
