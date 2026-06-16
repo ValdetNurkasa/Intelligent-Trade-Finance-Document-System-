@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import io
 import random
-import sys
 from pathlib import Path
 
 import fitz  # PyMuPDF
