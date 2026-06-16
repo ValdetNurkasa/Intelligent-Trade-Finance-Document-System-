@@ -1,8 +1,7 @@
 """Tests for Agent D matching rules."""
-import pytest
 from app.rules.matching_rules import run_matching
 from app.schemas.common import DocumentType
-from app.schemas.extraction import ExtractedDocs, ExtractedDocument, ExtractedField
+from app.schemas.extraction import ExtractedDocs
 from tests.fixtures.p2_sample import (
     sample_extracted_clean,
     sample_extracted_amount_over,

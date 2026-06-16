@@ -2,12 +2,11 @@ from __future__ import annotations
 from typing import Optional
 
 from app.schemas.common import Severity
-from app.schemas.extraction import ExtractedDocs, ExtractedField
+from app.schemas.extraction import ExtractedDocs
 from app.schemas.matching import Comparison, DocumentValue, MatchResult
 from app.tools.fuzzy_match_tool import compare as fuzzy_compare, THRESHOLD
 from app.tools.calculator_tool import parse_amount, within_tolerance, amount_difference_pct
 from app.utils.dates import parse_date
-from app.utils.ids import make_finding_id
 
 
 # ─── Field lookup helper ──────────────────────────────────────────────────────
@@ -147,48 +146,60 @@ def run_matching(extracted: ExtractedDocs, tolerance_pct: float = 5.0) -> MatchR
     inv_qty = _get(extracted, inv, "quantity")
     pl_qty  = _get(extracted, pl,  "total_quantity")
     qty_vals = []
-    if inv_qty: qty_vals.append(DocumentValue(document=inv, value=inv_qty))
-    if pl_qty:  qty_vals.append(DocumentValue(document=pl,  value=pl_qty))
+    if inv_qty:
+        qty_vals.append(DocumentValue(document=inv, value=inv_qty))
+    if pl_qty:
+        qty_vals.append(DocumentValue(document=pl, value=pl_qty))
     comparisons.append(_string_check("quantity", [inv, pl], qty_vals))
 
     # CHK-05  amount: invoice vs L/C (with tolerance)
     inv_amount = _get(extracted, inv, "amount")
     lc_amount  = _get(extracted, lc,  "amount")
     amount_vals = []
-    if inv_amount: amount_vals.append(DocumentValue(document=inv, value=inv_amount))
-    if lc_amount:  amount_vals.append(DocumentValue(document=lc,  value=lc_amount))
+    if inv_amount:
+        amount_vals.append(DocumentValue(document=inv, value=inv_amount))
+    if lc_amount:
+        amount_vals.append(DocumentValue(document=lc, value=lc_amount))
     comparisons.append(_amount_check("amount", [inv, lc], amount_vals, tolerance_pct))
 
     # CHK-06  on_board_date <= latest_shipment_date
     obd  = _get(extracted, bol, "on_board_date")
     lsd  = _get(extracted, lc,  "latest_shipment_date")
     date_vals = []
-    if obd: date_vals.append(DocumentValue(document=bol, value=obd))
-    if lsd: date_vals.append(DocumentValue(document=lc,  value=lsd))
+    if obd:
+        date_vals.append(DocumentValue(document=bol, value=obd))
+    if lsd:
+        date_vals.append(DocumentValue(document=lc, value=lsd))
     comparisons.append(_date_lte_check("on_board_date_vs_latest_shipment", [bol, lc], date_vals))
 
     # CHK-07  invoice_date <= expiry_date
     inv_date = _get(extracted, inv, "invoice_date")
     exp_date = _get(extracted, lc,  "expiry_date")
     inv_date_vals = []
-    if inv_date: inv_date_vals.append(DocumentValue(document=inv, value=inv_date))
-    if exp_date: inv_date_vals.append(DocumentValue(document=lc,  value=exp_date))
+    if inv_date:
+        inv_date_vals.append(DocumentValue(document=inv, value=inv_date))
+    if exp_date:
+        inv_date_vals.append(DocumentValue(document=lc, value=exp_date))
     comparisons.append(_date_lte_check("invoice_date_vs_expiry", [inv, lc], inv_date_vals))
 
     # CHK-08  beneficiary name: invoice vs L/C
     inv_ben = _get(extracted, inv, "beneficiary_name")
     lc_ben  = _get(extracted, lc,  "beneficiary")
     ben_vals = []
-    if inv_ben: ben_vals.append(DocumentValue(document=inv, value=inv_ben))
-    if lc_ben:  ben_vals.append(DocumentValue(document=lc,  value=lc_ben))
+    if inv_ben:
+        ben_vals.append(DocumentValue(document=inv, value=inv_ben))
+    if lc_ben:
+        ben_vals.append(DocumentValue(document=lc, value=lc_ben))
     comparisons.append(_string_check("beneficiary_name", [inv, lc], ben_vals))
 
     # CHK-09  applicant name: invoice vs L/C
     inv_app = _get(extracted, inv, "applicant_name")
     lc_app  = _get(extracted, lc,  "applicant")
     app_vals = []
-    if inv_app: app_vals.append(DocumentValue(document=inv, value=inv_app))
-    if lc_app:  app_vals.append(DocumentValue(document=lc,  value=lc_app))
+    if inv_app:
+        app_vals.append(DocumentValue(document=inv, value=inv_app))
+    if lc_app:
+        app_vals.append(DocumentValue(document=lc, value=lc_app))
     comparisons.append(_string_check("applicant_name", [inv, lc], app_vals))
 
     # CHK-10  port of loading: invoice vs B/L
