@@ -43,7 +43,7 @@ Goods: Electronic Components - PCB Assemblies
 
 def _invoice_text(scenario: str) -> str:
     if scenario == "tolerance":
-        amount = "251,250.00"   # 0.5 % over LC
+        amount = "250,750.00"   # 0.3 % over LC (passes 5 % default tolerance)
     elif scenario == "bl_late":
         amount = "250,000.00"
     else:
@@ -206,7 +206,7 @@ def build_bundle(out_dir: Path, scenario: str = "clean", scanned: bool = False) 
         "flags": {
             "partial_shipment_allowed": False,
             "transhipment_allowed": False,
-            "tolerance_percent": 5.0 if scenario != "tolerance" else 0.3,
+            "tolerance_percent": 5.0,
         },
         "documents": [
             {"type": "letter_of_credit",       "file": "lc.pdf"},
@@ -217,6 +217,18 @@ def build_bundle(out_dir: Path, scenario: str = "clean", scanned: bool = False) 
         ],
         "scenario": scenario,
         "scanned": scanned,
+        "expected_outcome": {
+            "clean": "HONOUR",
+            "tolerance": "HONOUR",
+            "bl_late": "REFER",
+            "name_variation": "HONOUR",
+        }.get(scenario, "UNKNOWN"),
+        "notes": {
+            "clean": "All documents consistent, no discrepancies.",
+            "tolerance": "Invoice 0.3% over LC amount — within 5% tolerance, should honour.",
+            "bl_late": "B/L on-board date after latest shipment date — major discrepancy.",
+            "name_variation": "Beneficiary name differs slightly (Co vs Company) — fuzzy match should succeed.",
+        }.get(scenario, ""),
     }
     with open(out_dir / "manifest.yaml", "w", encoding="utf-8") as f:
         yaml.dump(manifest, f, default_flow_style=False, allow_unicode=True)
