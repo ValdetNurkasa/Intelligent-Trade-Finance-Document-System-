@@ -73,10 +73,13 @@ Documentary Credit No: LC-2026-00099
 
 def _bol_text(scenario: str) -> str:
     onboard = "15/07/2026" if scenario == "bl_late" else "05/06/2026"
+    vessel = "MV Crimson Star" if scenario == "sanctions_hit" else "MV Adriatic Star"
+    partial = "\nPartial Shipment: YES" if scenario == "partial_shipment" else ""
+    presentation = "\nPresentation Date: 30/07/2026" if scenario == "late_presentation" else ""
     return f"""\
 BILL OF LADING
 BL No: COSU2026060501
-Vessel: MV Adriatic Star
+Vessel: {vessel}
 Voyage No: V-208E
 Shipper: Shenzhen Lition Electronics Co Ltd
 Consignee: Adriatic Imports Sh.p.k.
@@ -87,7 +90,7 @@ Shipped on Board Date: {onboard}
 Description of Goods: Electronic Components - PCB Assemblies
 Gross Weight: 12,500 KGS
 Measurement: 45 CBM
-Freight: FREIGHT PREPAID
+Freight: FREIGHT PREPAID{partial}{presentation}
 """
 
 
@@ -201,7 +204,7 @@ def build_bundle(out_dir: Path, scenario: str = "clean", scanned: bool = False) 
         "beneficiary": {"name": "Shenzhen Lition Electronics Co Ltd", "address": "Shenzhen, China", "country": "CN"},
         "issuing_bank": {"name": "Banka Kombetare Tregtare", "address": "Prishtina, Kosovo", "swift": "NCBAXKPRXXX", "country": "XK"},
         "advising_bank": {"name": "Bank of China", "address": "Shenzhen, China", "swift": "BKCHCNBJ45A", "country": "CN"},
-        "vessel": {"name": "MV Adriatic Star", "imo": "9123456", "flag_state": "Panama", "voyage": "V-208E"},
+        "vessel": {"name": "MV Crimson Star" if scenario == "sanctions_hit" else "MV Adriatic Star", "imo": "9123456", "flag_state": "Panama", "voyage": "V-208E"},
         "ports": {"loading": "Shenzhen", "discharge": "Durres"},
         "flags": {
             "partial_shipment_allowed": False,
@@ -222,12 +225,18 @@ def build_bundle(out_dir: Path, scenario: str = "clean", scanned: bool = False) 
             "tolerance": "HONOUR",
             "bl_late": "REFER",
             "name_variation": "HONOUR",
+            "partial_shipment": "REFUSE",
+            "sanctions_hit": "FREEZE",
+            "late_presentation": "REFUSE",
         }.get(scenario, "UNKNOWN"),
         "notes": {
             "clean": "All documents consistent, no discrepancies.",
             "tolerance": "Invoice 0.3% over LC amount — within 5% tolerance, should honour.",
             "bl_late": "B/L on-board date after latest shipment date — major discrepancy.",
             "name_variation": "Beneficiary name differs slightly (Co vs Company) — fuzzy match should succeed.",
+            "partial_shipment": "Partial shipment presented but L/C prohibits it — UCP 600 Art 31 breach.",
+            "sanctions_hit": "Vessel MV Crimson Star is on OFAC SDN list — immediate freeze.",
+            "late_presentation": "Documents presented 55 days after shipment — exceeds 21-day rule.",
         }.get(scenario, ""),
     }
     with open(out_dir / "manifest.yaml", "w", encoding="utf-8") as f:
@@ -245,7 +254,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate a trade bundle for testing.")
     parser.add_argument("--out", required=True, help="Output directory path")
     parser.add_argument("--scenario", default="clean",
-                        choices=["clean", "tolerance", "bl_late", "name_variation"],
+                        choices=["clean", "tolerance", "bl_late", "name_variation",
+                                 "partial_shipment", "sanctions_hit", "late_presentation"],
                         help="Which discrepancy scenario to generate")
     parser.add_argument("--scanned", action="store_true",
                         help="Generate scanned (image-only) PDFs instead of born-digital")
