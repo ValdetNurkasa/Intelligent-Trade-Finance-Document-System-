@@ -1,4 +1,4 @@
-"""P2-10: LLM-based semantic judge for ambiguous goods descriptions (gated by USE_LLM).
+"""P2-10: LLM-based semantic judge for ambiguous goods descriptions via OpenAI (gated by USE_LLM).
 
 Compares two goods-description strings and flags potentially ambiguous or
 inconsistent pairs for human review. NEVER sets a compliance verdict — it
@@ -8,13 +8,6 @@ only returns a flag and a reason string. The matching decision remains
 from __future__ import annotations
 
 from app.config import settings
-from app.llm.client import complete
-
-_SYSTEM = (
-    "You are a trade finance compliance reviewer. "
-    "You compare goods descriptions across trade documents. "
-    "You ONLY flag ambiguity — you never decide on compliance."
-)
 
 _PROMPT_TMPL = """\
 Compare the two goods descriptions below and determine whether they are \
@@ -35,7 +28,7 @@ def judge_descriptions(desc_a: str, desc_b: str) -> dict:
         {
             "ambiguous": bool,        # True if descriptions may differ in meaning
             "flag_for_review": bool,  # Same as ambiguous — caller decides action
-            "reason": str,            # LLM explanation or status message
+            "reason": str,            # explanation or status message
         }
 
     Always returns ambiguous=False when USE_LLM=False.
@@ -47,9 +40,32 @@ def judge_descriptions(desc_a: str, desc_b: str) -> dict:
             "reason": "LLM disabled (USE_LLM=false)",
         }
 
-    prompt = _PROMPT_TMPL.format(desc_a=desc_a[:500], desc_b=desc_b[:500])
     try:
-        text = complete(prompt, system=_SYSTEM, max_tokens=100).strip()
+        from openai import OpenAI
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            temperature=0,
+            max_tokens=100,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a trade finance compliance reviewer. "
+                        "You compare goods descriptions across trade documents. "
+                        "You ONLY flag ambiguity — you never decide on compliance."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": _PROMPT_TMPL.format(
+                        desc_a=desc_a[:500],
+                        desc_b=desc_b[:500],
+                    ),
+                },
+            ],
+        )
+        text = response.choices[0].message.content.strip()
     except Exception as exc:
         return {"ambiguous": False, "flag_for_review": False, "reason": f"LLM call failed: {exc}"}
 
