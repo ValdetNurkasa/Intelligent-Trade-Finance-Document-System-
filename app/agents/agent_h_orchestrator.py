@@ -3,6 +3,7 @@ from app.tools.policy_loader import load_policy
 from app.rules.decision_rules import decide, build_posting_payload
 from app.rules.discrepancy_rules import collect_findings
 from app.rules.swift_draft import generate_swift, generate_discrepancies_md
+from app.audit.decision_logger import log_decision
 from app.utils.io import write_model, write_text
 
 
@@ -23,6 +24,8 @@ def run(state: PipelineState, timestamp: str = "") -> PipelineState:
     state.final_decision = decision
 
     findings = collect_findings(state.ucp_result, state.match_result, state.sanctions)
+    rationale = log_decision(state.run_dir, state.context, decision, findings)
+    decision.audit_trail = rationale
     posting = build_posting_payload(state.context, decision)
     swift = generate_swift(state.context, decision)
     discrepancies = generate_discrepancies_md(state.context, decision, findings)
