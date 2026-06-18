@@ -1,4 +1,4 @@
-"""P2-07: LLM-based low-confidence field retry (gated by USE_LLM).
+"""P2-07: LLM-based low-confidence field retry via OpenAI (gated by USE_LLM).
 
 Only invoked for fields where low_confidence=True.
 Result is marked llm_derived=True so auditors can distinguish it from
@@ -7,18 +7,11 @@ regex-extracted values. No-op when USE_LLM=false (the default).
 from __future__ import annotations
 
 from app.config import settings
-from app.llm.client import complete
 from app.schemas.extraction import ExtractedField
-
-_SYSTEM = (
-    "You are a trade finance document parser. "
-    "Extract exactly one field value from the given document text. "
-    "Return only the raw extracted value — no explanation, no punctuation around it."
-)
 
 
 def retry_field(field_name: str, page_text: str, current: ExtractedField) -> ExtractedField:
-    """Retry extracting field_name via LLM when the regex result is low-confidence.
+    """Retry extracting field_name via OpenAI when the regex result is low-confidence.
 
     Returns the original field unchanged when:
     - USE_LLM is False (default)
@@ -29,12 +22,32 @@ def retry_field(field_name: str, page_text: str, current: ExtractedField) -> Ext
     if not settings.USE_LLM or not current.low_confidence:
         return current
 
-    prompt = (
-        f"Field to extract: {field_name}\n\n"
-        f"Document text (first 2000 chars):\n{page_text[:2000]}"
-    )
     try:
-        value = complete(prompt, system=_SYSTEM, max_tokens=80).strip()
+        from openai import OpenAI
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            temperature=0,
+            max_tokens=80,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a trade finance document parser. "
+                        "Extract exactly one field value from the given document text. "
+                        "Return only the raw extracted value — no explanation, no punctuation around it."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        f"Field to extract: {field_name}\n\n"
+                        f"Document text (first 2000 chars):\n{page_text[:2000]}"
+                    ),
+                },
+            ],
+        )
+        value = response.choices[0].message.content.strip()
     except Exception:
         return current
 
