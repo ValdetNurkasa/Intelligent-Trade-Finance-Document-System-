@@ -7,6 +7,7 @@ from app.pipeline import run_pipeline
 from app.state import PipelineState
 from app.audit.tracer import Tracer
 from app.audit.audit_logger import write_audit_log
+from app.reports.report_builder import write_run_report
 
 
 def create_run_dir(bundle_id: str) -> Path:
@@ -58,6 +59,7 @@ def main():
         events=tracer.events,
         decision=decision,
     )
+    write_run_report(state)
 
     print(f"\n[ITFDS] DECISION: {decision}")
     print(f"[ITFDS] Artifacts -> {run_dir}\n")
