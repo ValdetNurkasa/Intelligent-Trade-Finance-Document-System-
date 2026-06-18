@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 import csv
 import re
 from pathlib import Path
@@ -14,7 +14,7 @@ from app.utils.io import write_model
 LOW_CONFIDENCE_CUTOFF = 0.70
 
 
-# ─── Regex helpers ────────────────────────────────────────────────────────────
+# â”€â”€â”€ Regex helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _first(pattern: str, text: str) -> Optional[str]:
     m = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
@@ -44,7 +44,7 @@ def _field(name: str, value: Optional[str], base_conf: float,
     )
 
 
-# ─── Per-document-type extractors ────────────────────────────────────────────
+# â”€â”€â”€ Per-document-type extractors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _extract_invoice(pages: list[dict]) -> list[ExtractedField]:
     text = "\n".join(p["text"] for p in pages)
@@ -53,7 +53,7 @@ def _extract_invoice(pages: list[dict]) -> list[ExtractedField]:
     return [
         _field("invoice_number",    _first(r"invoice\s*(?:no|number|#)[:\s.]*([A-Z0-9\-/]+)", text), 0.92, pn, words),
         _field("invoice_date",      _first(r"invoice\s*date[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.90, pn, words),
-        _field("amount",            _first(r"total\s*(?:amount|value)?[:\s]*(?:USD|EUR|GBP|[$€£])?\s*([\d,]+(?:\.\d+)?)", text), 0.90, pn, words),
+        _field("amount",            _first(r"total\s*(?:amount|value)?[:\s]*(?:USD|EUR|GBP|[$â‚¬Â£])?\s*([\d,]+(?:\.\d+)?)", text), 0.90, pn, words),
         _field("currency",          _first(r"\b(USD|EUR|GBP|JPY|CHF|CNY)\b", text), 0.95, pn, words),
         _field("goods_description", _first(r"description\s*(?:of\s*goods)?[:\s]*([\w\s,\-.]+?)(?=\n|quantity|qty|amount|total)", text), 0.85, pn, words),
         _field("quantity",          _first(r"(?:total\s+)?quantity[:\s]*([\d,]+(?:\.\d+)?\s*(?:MT|KG|PCS|UNITS)?)", text), 0.88, pn, words),
@@ -72,6 +72,9 @@ def _extract_bol(pages: list[dict]) -> list[ExtractedField]:
     return [
         _field("bl_number",         _first(r"b/?l\s*(?:no|number|#)?[:\s.]*([A-Z0-9\-/]+)", text), 0.92, pn, words),
         _field("on_board_date",     _first(r"(?:on\s*board\s*date|shipped\s*on\s*board\s*date)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.92, pn, words),
+        _field("shipment_date",       _first(r"(?:on\s*board\s*date|shipped\s*on\s*board\s*date)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.92, pn, words),
+        _field("presentation_date",   _first(r"(?:presentation\s*date|presented\s*on)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.88, pn, words),
+        _field("partial_shipment",    _first(r"partial\s*shipment[:\s]*(true|false|yes|no|allowed|not\s*allowed)", text), 0.88, pn, words),
         _field("port_of_loading",   _first(r"port\s*of\s*loading[:\s]*([\w\s,]+?)(?=\n|port\s*of\s*dis)", text), 0.88, pn, words),
         _field("port_of_discharge", _first(r"port\s*of\s*discharge[:\s]*([\w\s,]+?)(?=\n|$|vessel|date)", text), 0.88, pn, words),
         _field("goods_description", _first(r"description\s*of\s*goods?[:\s]*([\w\s,\-.]+?)(?=\n|gross|net|measurement)", text), 0.85, pn, words),
@@ -114,7 +117,7 @@ def _extract_lc(pages: list[dict]) -> list[ExtractedField]:
     pn = pages[0]["page_num"] if pages else 1
     return [
         _field("lc_number",                _first(r"(?:documentary\s*credit\s*(?:no|number)?|l/?c\s*(?:no|number|#)?)[:\s.]*([A-Z0-9\-/]+)", text), 0.95, pn, words),
-        _field("amount",                   _first(r"amount[:\s]*(?:USD|EUR|GBP|[$€£])?\s*([\d,]+(?:\.\d+)?)", text), 0.95, pn, words),
+        _field("amount",                   _first(r"amount[:\s]*(?:USD|EUR|GBP|[$â‚¬Â£])?\s*([\d,]+(?:\.\d+)?)", text), 0.95, pn, words),
         _field("currency",                 _first(r"\b(USD|EUR|GBP|JPY|CHF|CNY)\b", text), 0.95, pn, words),
         _field("expiry_date",              _first(r"(?:expiry\s*date|valid\s*until)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.95, pn, words),
         _field("latest_shipment_date",     _first(r"latest\s*(?:date\s*of\s*)?shipment[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.92, pn, words),
@@ -148,7 +151,7 @@ _EXTRACTORS = {
 }
 
 
-# ─── CSV export ───────────────────────────────────────────────────────────────
+# â”€â”€â”€ CSV export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _write_csv(path: Path, docs: list[ExtractedDocument]) -> None:
     rows = [
@@ -174,7 +177,7 @@ def _write_csv(path: Path, docs: list[ExtractedDocument]) -> None:
         writer.writerows(rows)
 
 
-# ─── Public interface (P1 contract: run(state) -> state) ─────────────────────
+# â”€â”€â”€ Public interface (P1 contract: run(state) -> state) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run(state: PipelineState) -> PipelineState:
     """Agent B: parse every document in the bundle and extract structured fields."""
@@ -199,7 +202,7 @@ def run(state: PipelineState) -> PipelineState:
         extractor = _EXTRACTORS.get(doc_ref.type)
         fields = extractor(parsed["pages"]) if extractor else []
 
-        # OCR path introduces recognition uncertainty — apply confidence penalty
+        # OCR path introduces recognition uncertainty â€” apply confidence penalty
         if parsed["path_taken"] == "ocr":
             penalised = []
             for f in fields:
@@ -220,7 +223,7 @@ def run(state: PipelineState) -> PipelineState:
         low_conf = [f for f in fields if f.low_confidence]
         if len(fields) and len(low_conf) > len(fields) * 0.5:
             state.warnings.append(
-                f"agent_b: {doc_ref.file} – {len(low_conf)}/{len(fields)} fields low-confidence"
+                f"agent_b: {doc_ref.file} â€“ {len(low_conf)}/{len(fields)} fields low-confidence"
                 f" (path={parsed['path_taken']})"
             )
 
@@ -237,3 +240,4 @@ def run(state: PipelineState) -> PipelineState:
     _write_csv(state.run_dir / "extracted_docs.csv", extracted_docs)
 
     return state
+
