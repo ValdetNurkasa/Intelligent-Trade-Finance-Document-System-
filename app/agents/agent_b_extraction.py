@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from app.config import settings
 from app.schemas.common import BoundingBox, DocumentType
 from app.schemas.extraction import ExtractedDocs, ExtractedDocument, ExtractedField
 from app.state import PipelineState
@@ -197,6 +198,11 @@ def run(state: PipelineState) -> PipelineState:
 
         extractor = _EXTRACTORS.get(doc_ref.type)
         fields = extractor(parsed["pages"]) if extractor else []
+
+        if settings.USE_LLM:
+            from app.llm.extractor import retry_field
+            page_text = "\n".join(p["text"] for p in parsed["pages"])
+            fields = [retry_field(f.field_name, page_text, f) for f in fields]
 
         low_conf = [f for f in fields if f.low_confidence]
         if len(fields) and len(low_conf) > len(fields) * 0.5:

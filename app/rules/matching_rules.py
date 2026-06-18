@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 
+from app.config import settings
 from app.schemas.common import Severity
 from app.schemas.extraction import ExtractedDocs
 from app.schemas.matching import Comparison, DocumentValue, MatchResult
@@ -125,10 +126,22 @@ def run_matching(extracted: ExtractedDocs, tolerance_pct: float = 5.0) -> MatchR
     comparisons: list[Comparison] = []
 
     # CHK-01  goods description: invoice vs B/L
-    comparisons.append(_string_check(
-        "goods_description", [inv, bol],
-        _doc_values(extracted, "goods_description", inv, bol),
-    ))
+    chk01_vals = _doc_values(extracted, "goods_description", inv, bol)
+    chk01 = _string_check("goods_description", [inv, bol], chk01_vals)
+    if settings.USE_LLM and chk01.match and len(chk01_vals) == 2:
+        from app.llm.semantic_judge import judge_descriptions
+        verdict = judge_descriptions(chk01_vals[0].value, chk01_vals[1].value)
+        if verdict["flag_for_review"]:
+            chk01 = Comparison(
+                field_name=chk01.field_name,
+                documents_compared=chk01.documents_compared,
+                values=chk01.values,
+                match=chk01.match,
+                match_score=chk01.match_score,
+                severity=Severity.warning,
+                notes=f"[llm] semantic ambiguity flagged: {verdict['reason']}",
+            )
+    comparisons.append(chk01)
 
     # CHK-02  goods description: invoice vs packing list
     comparisons.append(_string_check(
