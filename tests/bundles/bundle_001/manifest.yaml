@@ -1,0 +1,90 @@
+﻿bundle_id: bundle_001
+lc_number: LC-2025-FNTB-00142
+currency: USD
+amount: 248500.00
+expiry_date: "2025-07-15"
+latest_shipment_date: "2025-06-30"
+presentation_period_days: 21
+incoterms: "CIF Los Angeles, Incoterms 2020"
+
+applicant:
+  name: "GlobalBuyer Corporation"
+  address: "450 Commerce Parkway, Suite 1200, Chicago, IL 60601, USA"
+  swift: "GLBCUS44"
+  country: "US"
+
+beneficiary:
+  name: "ExportCo Industries Limited"
+  address: "88 Industrial Estate Road, Guangzhou, Guangdong 510000, P.R. China"
+  swift: "EXCNCN2G"
+  country: "CN"
+
+issuing_bank:
+  name: "First National Trade Bank"
+  swift: "FNTBUS33"
+  address: "25 Finance Square, New York, NY 10005, USA"
+
+advising_bank:
+  name: "Bank of East Asia"
+  swift: "BEASHKHH"
+  address: "10 Des Voeux Road Central, Hong Kong SAR"
+
+vessel:
+  name: "MV PACIFIC HORIZON"
+  imo: "9412371"
+  flag_state: "PA"
+  voyage: "PH-025W"
+
+ports:
+  loading: "Guangzhou Port, China (CNGZH)"
+  discharge: "Port of Los Angeles, USA (USLAX)"
+
+flags:
+  partial_shipment_allowed: false
+  transhipment_allowed: false
+  tolerance_percent: 5.0
+
+ucp_version: "UCP 600 (ICC Publication No. 600)"
+
+documents:
+  - type: letter_of_credit
+    file: letter_of_credit.pdf
+    reference: LC-2025-FNTB-00142
+    date: "2025-05-15"
+
+  - type: bill_of_lading
+    file: bill_of_lading.pdf
+    reference: POCL-2025-GZ-004471
+    date: "2025-06-18"
+
+  - type: commercial_invoice
+    file: commercial_invoice.pdf
+    reference: EXP-INV-2025-0892
+    date: "2025-06-20"
+
+  - type: packing_list
+    file: packing_list.pdf
+    reference: EXP-PL-2025-0892
+    date: "2025-06-20"
+
+  - type: certificate_of_origin
+    file: certificate_of_origin.pdf
+    reference: CCPIT-GZ-2025-047821
+    date: "2025-06-20"
+
+  - type: marine_insurance_certificate
+    file: marine_insurance_certificate.pdf
+    reference: PMIC-CERT-2025-HK-008841
+    date: "2025-06-20"
+
+  - type: inspection_certificate
+    file: inspection_certificate.pdf
+    reference: SGS-GZ-2025-PSI-009342
+    date: "2025-06-19"
+
+  - type: sanctions_policy
+    file: sanctions_policy.yaml
+    version: "3.2"
+
+expected_outcome: HONOUR
+notes: "Clean bundle - all documents present, consistent, within validity, no sanctions flags."

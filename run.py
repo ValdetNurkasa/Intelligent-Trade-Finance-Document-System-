@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-
 from app.pipeline import run_pipeline
 from app.state import PipelineState
 
 
 def create_run_dir(bundle_id: str) -> Path:
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     run_id = f"run_{timestamp}"
     run_dir = Path("runs") / run_id
     run_dir.mkdir(parents=True, exist_ok=True)

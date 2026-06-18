@@ -1,0 +1,59 @@
+# Synthetic fallback values used when a document is absent or unreadable.
+# Agent B inserts an empty ExtractedDocument; these values document what
+# a human reviewer should fill in manually.
+
+commercial_invoice:
+  invoice_number: "SYNTHETIC-INV-UNKNOWN"
+  invoice_date: ""
+  amount: "0.00"
+  currency: "USD"
+  goods_description: ""
+  quantity: ""
+  beneficiary_name: ""
+  applicant_name: ""
+  port_of_loading: ""
+  port_of_discharge: ""
+  incoterms: ""
+
+bill_of_lading:
+  bl_number: "SYNTHETIC-BL-UNKNOWN"
+  on_board_date: ""
+  port_of_loading: ""
+  port_of_discharge: ""
+  goods_description: ""
+  gross_weight: ""
+  shipper: ""
+  consignee: ""
+  freight_terms: ""
+
+packing_list:
+  goods_description: ""
+  total_quantity: ""
+  gross_weight: ""
+  net_weight: ""
+  exporter: ""
+  importer: ""
+
+certificate_of_origin:
+  country_of_origin: ""
+  exporter: ""
+  goods_description: ""
+  quantity: ""
+
+letter_of_credit:
+  lc_number: "SYNTHETIC-LC-UNKNOWN"
+  amount: "0.00"
+  currency: "USD"
+  expiry_date: ""
+  latest_shipment_date: ""
+  beneficiary: ""
+  applicant: ""
+  partial_shipment: ""
+  transhipment: ""
+  presentation_period_days: ""
+
+inspection_certificate:
+  cert_number: "SYNTHETIC-CERT-UNKNOWN"
+  inspection_date: ""
+  goods_description: ""
+  inspection_result: ""
