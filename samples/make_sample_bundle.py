@@ -72,7 +72,7 @@ Documentary Credit No: LC-2026-00099
 
 
 def _bol_text(scenario: str) -> str:
-    onboard = "05/07/2026" if scenario == "bl_late" else "05/06/2026"
+    onboard = "15/07/2026" if scenario == "bl_late" else "05/06/2026"
     return f"""\
 BILL OF LADING
 BL No: COSU2026060501
