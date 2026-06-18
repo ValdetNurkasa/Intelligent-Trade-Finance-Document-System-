@@ -1,75 +1,54 @@
-﻿bundle_id: scenario_04
-lc_number: LC-2026-00104
-currency: USD
-amount: 180000.0
-expiry_date: "2026-08-15"
-latest_shipment_date: "2026-07-20"
-presentation_period_days: 21
-incoterms: CIF
-ucp_version: UCP600
-scenario: partial_shipment
-notes: L/C prohibits partial shipments but two separate shipments were presented.
-expected_outcome: REFUSE
-
-applicant:
-  name: "Adriatic Imports Sh.p.k."
-  address: "Prishtina, Kosovo"
-  country: XK
-
-beneficiary:
-  name: "Shenzhen Lition Electronics Co Ltd"
-  address: "Shenzhen, China"
-  country: CN
-
-issuing_bank:
-  name: "Banka Kombetare Tregtare"
-  swift: "NCBAXKPRXXX"
-  address: "Prishtina, Kosovo"
-  country: XK
-
 advising_bank:
-  name: "Bank of China"
-  swift: "BKCHCNBJ45A"
-  address: "Shenzhen, China"
+  address: Shenzhen, China
   country: CN
-
-vessel:
-  name: "MV Adriatic Star"
-  imo: "9123456"
-  flag_state: "PA"
-  voyage: "V-210E"
-
-ports:
-  loading: "Shenzhen"
-  discharge: "Durres"
-
+  name: Bank of China
+  swift: BKCHCNBJ45A
+amount: 250000.0
+applicant:
+  address: Prishtina, Kosovo
+  country: XK
+  name: Adriatic Imports Sh.p.k.
+beneficiary:
+  address: Shenzhen, China
+  country: CN
+  name: Shenzhen Lition Electronics Co Ltd
+bundle_id: scenario_04
+currency: USD
+documents:
+- file: lc.pdf
+  type: letter_of_credit
+- file: invoice.pdf
+  type: commercial_invoice
+- file: bill_of_lading.pdf
+  type: bill_of_lading
+- file: packing_list.pdf
+  type: packing_list
+- file: cert_origin.pdf
+  type: certificate_of_origin
+expected_outcome: REFUSE
+expiry_date: '2026-07-31'
 flags:
   partial_shipment_allowed: false
-  transhipment_allowed: false
   tolerance_percent: 5.0
-
-documents:
-  - type: letter_of_credit
-    file: lc.pdf
-    reference: LC-2026-00104
-    date: "2026-05-01"
-
-  - type: commercial_invoice
-    file: invoice.pdf
-    reference: INV-2026-00104
-    date: "2026-06-15"
-
-  - type: bill_of_lading
-    file: bill_of_lading.pdf
-    reference: BL-2026-00104
-    date: "2026-06-15"
-
-  - type: packing_list
-    file: packing_list.pdf
-    reference: PL-2026-00104
-    date: "2026-06-15"
-
-  - type: certificate_of_origin
-    file: cert_origin.pdf
-    reference: COO-2026-00104
-    date: "2026-06-15"
+  transhipment_allowed: false
+incoterms: CIF
+issuing_bank:
+  address: Prishtina, Kosovo
+  country: XK
+  name: Banka Kombetare Tregtare
+  swift: NCBAXKPRXXX
+latest_shipment_date: '2026-07-10'
+lc_number: LC-2026-00099
+notes: Partial shipment presented but L/C prohibits it — UCP 600 Art 31 breach.
+ports:
+  discharge: Durres
+  loading: Shenzhen
+presentation_period_days: 21
+scanned: false
+scenario: partial_shipment
+ucp_version: UCP600
+vessel:
+  flag_state: Panama
+  imo: '9123456'
+  name: MV Adriatic Star
+  voyage: V-208E
