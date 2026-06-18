@@ -118,3 +118,19 @@ def sample_extracted(bundle_id: str = "bundle_002_bl_expiry") -> ExtractedDocs:
             ),
         ],
     )
+
+
+def sample_context_sanctioned(bundle_id: str = "bundle_006_sanctions_hit") -> ContextPacket:
+    ctx = sample_context(bundle_id)
+    ctx.vessel = Vessel(
+        name="MV Crimson Star",
+        imo="9555888",
+        flag_state="Iran",
+        voyage="V-77W",
+    )
+    ctx.beneficiary = Party(
+        name="Crimson Star Shipping Ltd",
+        address="Bandar Abbas, Iran",
+        country="IR",
+    )
+    return ctx
