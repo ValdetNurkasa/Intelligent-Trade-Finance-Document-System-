@@ -72,6 +72,7 @@ def _extract_bol(pages: list[dict]) -> list[ExtractedField]:
     return [
         _field("bl_number",         _first(r"b/?l\s*(?:no|number|#)?[:\s.]*([A-Z0-9\-/]+)", text), 0.92, pn, words),
         _field("on_board_date",     _first(r"(?:on\s*board\s*date|shipped\s*on\s*board\s*date)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.92, pn, words),
+        _field("shipment_date",     _first(r"(?:on\s*board\s*date|shipped\s*on\s*board\s*date)[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.92, pn, words),
         _field("port_of_loading",   _first(r"port\s*of\s*loading[:\s]*([\w\s,]+?)(?=\n|port\s*of\s*dis)", text), 0.88, pn, words),
         _field("port_of_discharge", _first(r"port\s*of\s*discharge[:\s]*([\w\s,]+?)(?=\n|$|vessel|date)", text), 0.88, pn, words),
         _field("goods_description", _first(r"description\s*of\s*goods?[:\s]*([\w\s,\-.]+?)(?=\n|gross|net|measurement)", text), 0.85, pn, words),
@@ -79,6 +80,8 @@ def _extract_bol(pages: list[dict]) -> list[ExtractedField]:
         _field("shipper",           _first(r"shipper[:\s]*([\w\s,\.]+?)(?=\n|consignee|notify)", text), 0.85, pn, words),
         _field("consignee",         _first(r"consignee[:\s]*([\w\s,\.]+?)(?=\n|notify|port)", text), 0.85, pn, words),
         _field("freight_terms",     _first(r"\b(FREIGHT\s*PREPAID|FREIGHT\s*COLLECT)\b", text), 0.95, pn, words),
+        _field("partial_shipment",  _first(r"partial\s*shipment[:\s]*(YES|NO|TRUE|FALSE|ALLOWED|NOT\s*ALLOWED)", text), 0.90, pn, words),
+        _field("presentation_date", _first(r"presentation\s*date[:\s]*(\d{1,2}[/\-]\d{1,2}[/\-]\d{2,4}|\d{4}-\d{2}-\d{2})", text), 0.90, pn, words),
     ]
 
 
