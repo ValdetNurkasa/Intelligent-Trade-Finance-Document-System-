@@ -1,10 +1,8 @@
 """P1-13: Streamlit UI for ITFDS pipeline."""
 from __future__ import annotations
 
-import shutil
 import tempfile
 import zipfile
-from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
