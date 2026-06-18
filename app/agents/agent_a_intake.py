@@ -133,6 +133,9 @@ def detect_risk_flags(manifest: dict, doc_refs: list[DocumentRef]) -> tuple[list
 
 
 def run(state: PipelineState) -> PipelineState:
+    if state.tracer:
+        state.tracer.log("A", "intake started")
+
     manifest = load_manifest(state.bundle_path)
 
     doc_refs = build_document_refs(manifest, state.bundle_path)
@@ -181,4 +184,12 @@ def run(state: PipelineState) -> PipelineState:
     write_model(state.run_dir / "context_packet.json", context)
 
     state.context = context
+
+    if state.tracer:
+        state.tracer.log("A", "intake complete", {
+            "documents": len(doc_refs),
+            "risk_level": risk_level.value,
+            "risk_flags": len(risk_flags),
+        })
+
     return state
