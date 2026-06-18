@@ -147,7 +147,7 @@ def test_s04_ucp31_partial_shipment_fails(tmp_path):
     )
     assert rule is not None, "UCP600-31-partial rule not found in results"
     assert rule.passed is False, (
-        f"Expected UCP600-31-partial to FAIL for partial-shipment bundle, but passed=True"
+        "Expected UCP600-31-partial to FAIL for partial-shipment bundle, but passed=True"
     )
 
 
