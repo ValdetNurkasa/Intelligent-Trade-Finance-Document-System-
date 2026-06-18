@@ -1,0 +1,75 @@
+﻿bundle_id: scenario_07
+lc_number: LC-2026-00107
+currency: USD
+amount: 95000.0
+expiry_date: "2026-08-15"
+latest_shipment_date: "2026-06-01"
+presentation_period_days: 21
+incoterms: CIF
+ucp_version: UCP600
+scenario: late_presentation
+notes: B/L date is 2026-06-01, presentation deadline is 2026-06-22, but documents presented on 2026-07-15 - 21 day rule breached.
+expected_outcome: REFUSE
+
+applicant:
+  name: "Adriatic Imports Sh.p.k."
+  address: "Prishtina, Kosovo"
+  country: XK
+
+beneficiary:
+  name: "Shenzhen Lition Electronics Co Ltd"
+  address: "Shenzhen, China"
+  country: CN
+
+issuing_bank:
+  name: "Banka Kombetare Tregtare"
+  swift: "NCBAXKPRXXX"
+  address: "Prishtina, Kosovo"
+  country: XK
+
+advising_bank:
+  name: "Bank of China"
+  swift: "BKCHCNBJ45A"
+  address: "Shenzhen, China"
+  country: CN
+
+vessel:
+  name: "MV Adriatic Star"
+  imo: "9123456"
+  flag_state: "PA"
+  voyage: "V-211E"
+
+ports:
+  loading: "Shenzhen"
+  discharge: "Durres"
+
+flags:
+  partial_shipment_allowed: false
+  transhipment_allowed: false
+  tolerance_percent: 5.0
+
+documents:
+  - type: letter_of_credit
+    file: lc.pdf
+    reference: LC-2026-00107
+    date: "2026-05-01"
+
+  - type: commercial_invoice
+    file: invoice.pdf
+    reference: INV-2026-00107
+    date: "2026-07-15"
+
+  - type: bill_of_lading
+    file: bill_of_lading.pdf
+    reference: BL-2026-00107
+    date: "2026-06-01"
+
+  - type: packing_list
+    file: packing_list.pdf
+    reference: PL-2026-00107
+    date: "2026-07-15"
+
+  - type: certificate_of_origin
+    file: cert_origin.pdf
+    reference: COO-2026-00107
+    date: "2026-07-15"
