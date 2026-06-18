@@ -195,14 +195,17 @@ def test_s08_agent_b_signals_extraction_failure(tmp_path):
     assert state.extracted is not None, "Agent B produced no ExtractedDocs"
 
     if _TESSERACT_AVAILABLE:
-        # With OCR available, extracted fields may have low-confidence scores
-        low_conf = [
+        # With OCR available, fields are either low-confidence (USE_LLM=false)
+        # or llm_derived (USE_LLM=true retried them) — both prove OCR penalty fired
+        flagged = [
             f
             for doc in state.extracted.documents
             for f in doc.fields
-            if f.low_confidence
+            if f.low_confidence or f.llm_derived
         ]
-        assert len(low_conf) > 0, "Expected low-confidence fields with OCR on scanned PDF"
+        assert len(flagged) > 0, (
+            "Expected low-confidence or llm_derived fields when OCR path taken on scanned PDF"
+        )
     else:
         # Without OCR binary: agent_b falls back to empty fields + warning
         ocr_warnings = [w for w in state.warnings if "tesseract" in w.lower() or "fallback" in w.lower()]

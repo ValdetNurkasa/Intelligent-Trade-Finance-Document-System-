@@ -199,6 +199,19 @@ def run(state: PipelineState) -> PipelineState:
         extractor = _EXTRACTORS.get(doc_ref.type)
         fields = extractor(parsed["pages"]) if extractor else []
 
+        # OCR path introduces recognition uncertainty — apply confidence penalty
+        if parsed["path_taken"] == "ocr":
+            penalised = []
+            for f in fields:
+                new_conf = round(f.confidence * 0.80, 4)
+                low = new_conf < LOW_CONFIDENCE_CUTOFF
+                penalised.append(f.model_copy(update={
+                    "confidence": new_conf,
+                    "low_confidence": low,
+                    "manual_review_required": low,
+                }))
+            fields = penalised
+
         if settings.USE_LLM:
             from app.llm.extractor import retry_field
             page_text = "\n".join(p["text"] for p in parsed["pages"])
