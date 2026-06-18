@@ -1,0 +1,10 @@
+country_code,country_name,risk_tier,embargo
+IR,Iran,4,true
+KP,North Korea,4,true
+SY,Syria,4,true
+RU,Russia,3,false
+BY,Belarus,3,false
+CN,China,2,false
+XK,Kosovo,1,false
+AL,Albania,1,false
+PA,Panama,1,false

@@ -1,5 +1,5 @@
-from pathlib import Path
-from typing import Optional
+﻿from pathlib import Path
+from typing import Optional, Any
 from pydantic import BaseModel
 from app.schemas.context import ContextPacket
 from app.schemas.extraction import ExtractedDocs
@@ -21,5 +21,6 @@ class PipelineState(BaseModel):
     final_decision: Optional[FinalDecision] = None
     errors: list[str] = []
     warnings: list[str] = []
+    tracer: Optional[Any] = None
 
     model_config = {"arbitrary_types_allowed": True}

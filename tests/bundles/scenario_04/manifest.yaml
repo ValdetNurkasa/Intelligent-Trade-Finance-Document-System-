@@ -1,0 +1,54 @@
+advising_bank:
+  address: Shenzhen, China
+  country: CN
+  name: Bank of China
+  swift: BKCHCNBJ45A
+amount: 250000.0
+applicant:
+  address: Prishtina, Kosovo
+  country: XK
+  name: Adriatic Imports Sh.p.k.
+beneficiary:
+  address: Shenzhen, China
+  country: CN
+  name: Shenzhen Lition Electronics Co Ltd
+bundle_id: scenario_04
+currency: USD
+documents:
+- file: lc.pdf
+  type: letter_of_credit
+- file: invoice.pdf
+  type: commercial_invoice
+- file: bill_of_lading.pdf
+  type: bill_of_lading
+- file: packing_list.pdf
+  type: packing_list
+- file: cert_origin.pdf
+  type: certificate_of_origin
+expected_outcome: REFUSE
+expiry_date: '2026-07-31'
+flags:
+  partial_shipment_allowed: false
+  tolerance_percent: 5.0
+  transhipment_allowed: false
+incoterms: CIF
+issuing_bank:
+  address: Prishtina, Kosovo
+  country: XK
+  name: Banka Kombetare Tregtare
+  swift: NCBAXKPRXXX
+latest_shipment_date: '2026-07-10'
+lc_number: LC-2026-00099
+notes: Partial shipment presented but L/C prohibits it — UCP 600 Art 31 breach.
+ports:
+  discharge: Durres
+  loading: Shenzhen
+presentation_period_days: 21
+scanned: false
+scenario: partial_shipment
+ucp_version: UCP600
+vessel:
+  flag_state: Panama
+  imo: '9123456'
+  name: MV Adriatic Star
+  voyage: V-208E
